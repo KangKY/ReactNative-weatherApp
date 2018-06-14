@@ -9,15 +9,12 @@ export default class App extends React.Component {
     isLoaded : false,
     error : null,
     name:null,
-    temparature : null
+    temperature : null
   };
 
   componentDidMount() {
     navigator.geolocation.getCurrentPosition(
       position => {
-        this.setState({
-          isLoaded : true
-        });
         this._getWeather(position.coords.latitude, position.coords.longitude);
       },
       error => {
@@ -35,19 +32,21 @@ export default class App extends React.Component {
     .then(json => {
       console.log(json);
       this.setState({
-        temparature : json.main.temp,
-        name : json.weather[0].main
+        temperature : json.main.temp,
+        name : json.weather[0].main,
+        isLoaded : true
       });
     });
   }
   
   render() {
-    const { isLoaded, error } = this.state;
+    const { isLoaded, error, temperature, name } = this.state;
+    console.log(temperature);
     return (
       <View style={styles.container}>
          <StatusBar hidden />
         {isLoaded ? ( 
-          <Weather /> 
+          <Weather weatherName={name} temp={Math.floor(temperature - 273.15)} /> 
         ) : (<View style={styles.loading}>
           <ActivityIndicator />
           <Text style={styles.loadingText}> 날씨 데이터 조회중</Text>
@@ -58,6 +57,9 @@ export default class App extends React.Component {
     );
   }
 }
+
+
+
 
 const styles = StyleSheet.create({
   container: {
